@@ -7,7 +7,7 @@ import org.springframework.boot.runApplication
 import org.springframework.context.annotation.Bean
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.server.HandlerFunction
-import org.springframework.web.reactive.function.server.RequestPredicates
+import org.springframework.web.reactive.function.server.RequestPredicates.*
 import org.springframework.web.reactive.function.server.RouterFunction
 import org.springframework.web.reactive.function.server.RouterFunctions
 import org.springframework.web.reactive.function.server.ServerResponse
@@ -17,26 +17,26 @@ import reactor.core.publisher.Mono
 @SpringBootApplication
 class ReactiveApplication {
     private val log = LoggerFactory.getLogger(ReactiveApplication::class.java)
+
     @Bean
     fun wha() = ApplicationRunner {
         log.info("oh hai")
     }
 
-    /*
     @Bean
-    fun router() = RouterFunction<ServerResponse> {
-        return RouterFunctions.route(RequestPredicates.GET("/hai") {
-            req -> ok().body
-        }) }
+    fun router(service: HaiService): RouterFunction<ServerResponse> {
+        return RouterFunctions.route(
+                GET("/hai"), HandlerFunction { ok().body(service.generic(), Hai::class.java) }
+        )
     }
-    */
 }
 
 @Service
 class HaiService {
-    fun generic(): Mono<String> = Mono.just("ugh")
+    fun generic(): Mono<Hai> = Mono.just(Hai("ugh"))
 }
 
+data class Hai(val message: String)
 
 fun main(args: Array<String>) {
     runApplication<ReactiveApplication>(*args)

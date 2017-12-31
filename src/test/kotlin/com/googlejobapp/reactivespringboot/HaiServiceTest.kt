@@ -15,6 +15,6 @@ class HaiServiceTest {
     @Test
     fun testGeneric() {
         val generic = service.generic().block()
-        assertEquals("response", "ugh", generic)
+        assertEquals("response", Hai("ugh"), generic)
     }
 }
