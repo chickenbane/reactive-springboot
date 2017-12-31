@@ -3,6 +3,8 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/reactive-springboot.iml" filepath="$PROJECT_DIR$/reactive-springboot.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/reactive-springboot_main.iml" filepath="$PROJECT_DIR$/.idea/modules/reactive-springboot_main.iml" group="reactive-springboot" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/reactive-springboot_test.iml" filepath="$PROJECT_DIR$/.idea/modules/reactive-springboot_test.iml" group="reactive-springboot" />
     </modules>
   </component>
 </project>
