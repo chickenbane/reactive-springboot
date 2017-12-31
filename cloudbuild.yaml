@@ -1,0 +1,7 @@
+steps:
+- name: 'gcr.io/cloud-builders/gradle'
+  args: ['build']
+- name: 'gcr.io/cloud-builders/docker'
+  args: [ 'build', '-t', 'gcr.io/$PROJECT_ID/reactive-springboot', '.' ]
+images:
+- 'gcr.io/$PROJECT_ID/reactive-springboot'
