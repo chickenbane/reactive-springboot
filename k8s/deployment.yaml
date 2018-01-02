@@ -1,0 +1,21 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: rsb-deployment
+  labels:
+    app: rsb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rsb
+  template:
+    metadata:
+      labels:
+        app: rsb
+    spec:
+      containers:
+      - image: gcr.io/talknerdy-one/reactive-springboot
+        name: reactive-springboot
+        ports:
+        - containerPort: 8080

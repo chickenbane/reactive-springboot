@@ -15,10 +15,16 @@ Steps to recreate
 4. Integrate with Google Cloud Container Builder
     * Example cloudbuild.yaml from https://github.com/GoogleCloudPlatform/cloud-builders
     * Add cloudbuild.yaml to enable the below command (which is the same as the command above)
-    * `gcloud container builds submit --config cloudbuild.yaml .`
+    * Submit build `gcloud container builds submit --config cloudbuild.yaml .`
     * These operations appear to tarball current directory, so `./gradlew clean` before might be a good idea
-    * Setup Build trigger in GCP Container Registry
+    * Setup Build trigger in GCP Container Registry and cloudbuild.yaml
 4. Deploy to GKE
-    * Create a cluster `gcloud container clusters create [CLUSTER-NAME]`
-    * Create deployment rsb-deployment `kubectl run rsb-deployment --image=gcr.io/talknerdy-one/reactive-springboot:latest --port 8080`
+    * Create cluster `gcloud container clusters create [CLUSTER-NAME]`
+    * Create deployment `kubectl run rsb-deployment --image=gcr.io/talknerdy-one/reactive-springboot:latest --port 8080`
     * Create service `kubectl expose deployment rsb-deployment --type=LoadBalancer --port 80 --target-port 8080`
+5. Infra as code
+    * Recreate deployment.yaml and service.yaml to match kubectl commands
+    * Setup Cloud DNS
+6. Cleanup
+    * Delete service `kubectl delete svc rsb-service`
+    * Delete cluster `gcloud container clusters delete [CLUSTER-NAME]`
