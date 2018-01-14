@@ -18,7 +18,6 @@ buildscript {
 
 apply plugin: 'kotlin'
 apply plugin: 'kotlin-spring'
-apply plugin: 'eclipse'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
 
@@ -38,10 +37,6 @@ repositories {
 	maven { url "https://repo.spring.io/milestone" }
 }
 
-configurations {
-    compile.exclude module: "spring-boot-starter-tomcat"
-}
-
 dependencies {
 	compile('org.springframework.boot:spring-boot-starter-webflux')
 	compile('org.springframework.boot:spring-boot-starter-data-cassandra')
@@ -59,9 +54,6 @@ dependencies {
 	// To enable "Endpoints" tab in IntelliJ
 	compile('org.springframework.boot:spring-boot-starter-web')
 	compile('org.springframework.boot:spring-boot-starter-actuator')
-
-    // Enable Jetty, along with exclude in configurations
-	compile('org.springframework.boot:spring-boot-starter-jetty')
 
     // Springfox
     compile "io.springfox:springfox-swagger2:${springfoxVersion}"

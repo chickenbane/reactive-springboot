@@ -39,8 +39,7 @@ class CassandraController(private val repo: UserRepo) {
     @PostMapping("/")
     fun post(@RequestBody body: User): Mono<Void> {
         log.info("post: got body=$body")
-        return repo.save(body).then()  // TODO should return 201 created
-        // TODO if already created, return 200?
+        return repo.save(body).then()
     }
 
     @ApiOperation("Get a user", response = User::class, produces = APPLICATION_JSON_VALUE)
