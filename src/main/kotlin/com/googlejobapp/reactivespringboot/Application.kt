@@ -1,10 +1,15 @@
 package com.googlejobapp.reactivespringboot
 
+import com.google.common.base.Predicate
 import com.google.common.base.Predicates
+import io.swagger.annotations.ApiOperation
+import io.swagger.annotations.ApiResponse
+import io.swagger.annotations.ApiResponses
 import org.slf4j.LoggerFactory
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.context.annotation.Bean
+import org.springframework.http.MediaType.APPLICATION_JSON_VALUE
 import org.springframework.stereotype.Controller
 import org.springframework.stereotype.Service
 import org.springframework.web.bind.annotation.GetMapping
@@ -26,8 +31,13 @@ class ReactiveApplication {
     fun sqsSwagger(): Docket = Docket(DocumentationType.SWAGGER_2)
             .apiInfo(apiInfo())
             .select()
-            .paths(Predicates.or(PathSelectors.regex("/hola/.*"), PathSelectors.regex("/c/.*")))
+            .paths(paths())
             .build()
+
+    private fun paths(): Predicate<String> = Predicates.or(
+            PathSelectors.regex("/hola.*"),
+            PathSelectors.regex("/c/.*")
+    )
 
     private fun apiInfo(): ApiInfo {
         return ApiInfoBuilder()
@@ -56,9 +66,13 @@ class SwaggerRedirectController {
 class HaiController(private val service: HaiService) {
     private val log = LoggerFactory.getLogger(HaiController::class.java)
 
+    @ApiOperation("Basic greeting", response = Hai::class, produces = APPLICATION_JSON_VALUE)
+    @ApiResponses(ApiResponse(code = 200, message = "Hi"))
     @GetMapping("/hola")
     fun generic(): Mono<Hai> = service.generic()
 
+    @ApiOperation("Special greeting", response = Hai::class, produces = APPLICATION_JSON_VALUE)
+    @ApiResponses(ApiResponse(code = 200, message = "Hi"))
     @GetMapping("/hola/{name}")
     fun simple(@PathVariable name: String): Mono<Hai> {
         log.debug("simple: got name=$name")
