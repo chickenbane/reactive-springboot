@@ -28,3 +28,24 @@ Steps to recreate
 6. Cleanup
     * Delete service `kubectl delete svc rsb-service`
     * Delete cluster `gcloud container clusters delete [CLUSTER-NAME]`
+
+
+Attach to Cassandra
+1. Create keyspace and table in Cassandra cluster
+    * Use cqlsh locally `kubectl port-forward cassandra-0 9042`
+    * `create keyspace rsb with replication = {'class':'SimpleStrategy', 'replication_factor':2};`
+    * `use rsb;`
+    * `create table users ( username text primary key, first text, last text, email text);`
+    * Do operations
+    * `insert into users (username, first, last, email) values ('bob', 'bob', 'smith', 'bobsmith@foo.com');`
+    * `select * from users;`
+2. Forward port to cluster `kubectl port-forward cassandra-0 9042`
+3. Edit the configuration via environment variable `SPRING_DATA_CASSANDRA_CONTACT_POINTS=localhost`
+```
+curl -X POST \
+     http://localhost:8080/cass/ \
+     -H 'cache-control: no-cache' \
+     -H 'content-type: application/json' \
+     -H 'postman-token: b1c68ff0-ab83-a51c-7611-e555beac725a' \
+     -d '{"username":"joey", "first": "joey", "last": "doe", "email": "hi@email.com"}'
+```

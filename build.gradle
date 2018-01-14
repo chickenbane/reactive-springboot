@@ -40,6 +40,8 @@ repositories {
 
 dependencies {
 	compile('org.springframework.boot:spring-boot-starter-webflux')
+	compile('org.springframework.boot:spring-boot-starter-data-cassandra')
+    compile "com.fasterxml.jackson.module:jackson-module-kotlin"
 	compile("org.jetbrains.kotlin:kotlin-stdlib-jre8:${kotlinVersion}")
 	compile("org.jetbrains.kotlin:kotlin-reflect:${kotlinVersion}")
 	runtime('org.springframework.boot:spring-boot-devtools')
@@ -49,4 +51,8 @@ dependencies {
 	// Not actually needed, but declared so older kotlin versions don't get pulled in
 	compile("org.jetbrains.kotlin:kotlin-stdlib:${kotlinVersion}")
 	compile("org.jetbrains.kotlin:kotlin-stdlib-jre7:${kotlinVersion}")
+
+	// To enable "Endpoints" tab in IntelliJ
+	compile('org.springframework.boot:spring-boot-starter-web')
+	compile('org.springframework.boot:spring-boot-starter-actuator')
 }
