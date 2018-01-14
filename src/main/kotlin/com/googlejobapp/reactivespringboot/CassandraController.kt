@@ -7,8 +7,10 @@ import org.slf4j.LoggerFactory
 import org.springframework.data.cassandra.core.mapping.PrimaryKey
 import org.springframework.data.cassandra.core.mapping.Table
 import org.springframework.data.cassandra.repository.ReactiveCassandraRepository
-import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.http.MediaType.APPLICATION_JSON_VALUE
+import org.springframework.http.ResponseEntity
+import org.springframework.http.ResponseEntity.notFound
+import org.springframework.http.ResponseEntity.ok
 import org.springframework.stereotype.Repository
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -16,9 +18,6 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import org.springframework.web.reactive.function.server.ServerResponse
-import org.springframework.web.reactive.function.server.ServerResponse.notFound
-import org.springframework.web.reactive.function.server.ServerResponse.ok
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 
@@ -33,7 +32,10 @@ class CassandraController(private val repo: UserRepo) {
     fun all(): Flux<User> = repo.findAll()
 
     @ApiOperation("Add a user", response = Unit::class, consumes = APPLICATION_JSON_VALUE)
-    @ApiResponses(value = [ApiResponse(code = 200, message = "All users", response = Void::class), ApiResponse(code = 201, message = "Created", response = Unit::class)])
+    @ApiResponses(value = [
+        ApiResponse(code = 200, message = "Updated", response = Unit::class),
+        ApiResponse(code = 201, message = "Created", response = Unit::class)
+    ])
     @PostMapping("/")
     fun post(@RequestBody body: User): Mono<Void> {
         log.info("post: got body=$body")
@@ -44,17 +46,9 @@ class CassandraController(private val repo: UserRepo) {
     @ApiOperation("Get a user", response = User::class, produces = APPLICATION_JSON_VALUE)
     @ApiResponses(ApiResponse(code = 200, message = "User"))
     @GetMapping("{username}")
-    fun getUsername2(@PathVariable username: String): Mono<User> = repo.findById(username)
-
-    // TODO this endpoint doesn't really work =/
-    @ApiOperation("Get a user", response = User::class, produces = APPLICATION_JSON_VALUE)
-    @ApiResponses(ApiResponse(code = 200, message = "User"))
-    @GetMapping("cass/{username}")
-    fun getUsername(@PathVariable username: String): Mono<ServerResponse> {
-        return repo.findById(username)
-                .flatMap { ok().contentType(APPLICATION_JSON).body(Mono.just(it), User::class.java) }
-                .switchIfEmpty(notFound().build())
-    }
+    fun getUsername(@PathVariable username: String): Mono<ResponseEntity<User>> = repo.findById(username)
+            .map { ok(it) }
+            .switchIfEmpty(Mono.just(notFound().build()))
 }
 
 // create table users ( username text primary key, first text, last text, email text)
