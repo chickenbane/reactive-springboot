@@ -2,7 +2,8 @@ buildscript {
 	ext {
 		kotlinVersion = '1.2.10'
 		springBootVersion = '2.0.0.M7'
-	}
+        springfoxVersion = '2.7.0'
+    }
 	repositories {
 		mavenCentral()
 		maven { url "https://repo.spring.io/snapshot" }
@@ -37,6 +38,9 @@ repositories {
 	maven { url "https://repo.spring.io/milestone" }
 }
 
+configurations {
+    compile.exclude module: "spring-boot-starter-tomcat"
+}
 
 dependencies {
 	compile('org.springframework.boot:spring-boot-starter-webflux')
@@ -55,4 +59,12 @@ dependencies {
 	// To enable "Endpoints" tab in IntelliJ
 	compile('org.springframework.boot:spring-boot-starter-web')
 	compile('org.springframework.boot:spring-boot-starter-actuator')
+
+    // Enable Jetty, along with exclude in configurations
+	compile('org.springframework.boot:spring-boot-starter-jetty')
+
+    // Springfox
+    compile "io.springfox:springfox-swagger2:${springfoxVersion}"
+    compile "io.springfox:springfox-swagger-ui:${springfoxVersion}"
+    compile "io.springfox:springfox-bean-validators:${springfoxVersion}"
 }

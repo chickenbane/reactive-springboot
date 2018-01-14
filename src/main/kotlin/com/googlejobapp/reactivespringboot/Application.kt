@@ -1,73 +1,75 @@
 package com.googlejobapp.reactivespringboot
 
+import com.google.common.base.Predicates
 import org.slf4j.LoggerFactory
-import org.springframework.boot.ApplicationRunner
+import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
-import org.springframework.boot.builder.SpringApplicationBuilder
 import org.springframework.context.annotation.Bean
-import org.springframework.context.support.beans
+import org.springframework.stereotype.Controller
 import org.springframework.stereotype.Service
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import org.springframework.web.reactive.function.server.HandlerFunction
-import org.springframework.web.reactive.function.server.RequestPredicates.*
-import org.springframework.web.reactive.function.server.RouterFunction
-import org.springframework.web.reactive.function.server.RouterFunctions
-import org.springframework.web.reactive.function.server.ServerResponse
-import org.springframework.web.reactive.function.server.ServerResponse.ok
-import org.springframework.web.reactive.function.server.router
 import reactor.core.publisher.Mono
+import springfox.documentation.builders.ApiInfoBuilder
+import springfox.documentation.builders.PathSelectors
+import springfox.documentation.service.ApiInfo
+import springfox.documentation.service.Contact
+import springfox.documentation.spi.DocumentationType
+import springfox.documentation.spring.web.plugins.Docket
+import springfox.documentation.swagger2.annotations.EnableSwagger2
 
 @SpringBootApplication
+@EnableSwagger2
 class ReactiveApplication {
-    private val log = LoggerFactory.getLogger(ReactiveApplication::class.java)
-
     @Bean
-    fun wha() = ApplicationRunner {
-        log.info("oh hai")
-    }
+    fun sqsSwagger(): Docket = Docket(DocumentationType.SWAGGER_2)
+            .apiInfo(apiInfo())
+            .select()
+            .paths(Predicates.or(PathSelectors.regex("/hola/.*"), PathSelectors.regex("/c/.*")))
+            .build()
 
-    @Bean
-    fun router(service: HaiService): RouterFunction<ServerResponse> {
-        return RouterFunctions.route(
-                GET("/hai"), HandlerFunction { ok().body(service.generic(), Hai::class.java) }
-        )
+    private fun apiInfo(): ApiInfo {
+        return ApiInfoBuilder()
+                .title("Reactive SpringBoot")
+                .description("Kotlin + SpringFox + WebFlux + Cassandra")
+                .contact(Contact("Joey T", "https://github.com/chickenbane/reactive-springboot", "thechickenbane@gmail.com"))
+                .license("Apache License Version 2.0")
+                .licenseUrl("https://choosealicense.com/licenses/apache-2.0")
+                .version("1.0")  // TODO get version
+                .build()
     }
 }
 
+
+fun main(args: Array<String>) {
+    SpringApplication.run(ReactiveApplication::class.java, *args)
+}
+
+@Controller
+class SwaggerRedirectController {
+    @GetMapping("/")
+    fun swagger() = "redirect:swagger-ui.html"
+}
+
 @RestController
-@RequestMapping("rc")
 class HaiController(private val service: HaiService) {
-    @GetMapping("/hai")
+    private val log = LoggerFactory.getLogger(HaiController::class.java)
+
+    @GetMapping("/hola")
     fun generic(): Mono<Hai> = service.generic()
 
     @GetMapping("/hola/{name}")
-    fun simple(@PathVariable name: String) = service.simple(name)
+    fun simple(@PathVariable name: String): Mono<Hai> {
+        log.debug("simple: got name=$name")
+        return service.simple(name)
+    }
 }
 
 @Service
 class HaiService {
-    fun generic(): Mono<Hai> = Mono.just(Hai("ugh"))
-    fun simple(name: String): Mono<Hai> = Mono.just(Hai("hola $name"))
+    fun generic(): Mono<Hai> = Mono.just(Hai("Hola human"))
+    fun simple(name: String): Mono<Hai> = Mono.just(Hai("Hola $name"))
 }
 
 data class Hai(val message: String)
-
-fun main(args: Array<String>) {
-    SpringApplicationBuilder()
-            .sources(ReactiveApplication::class.java)
-            .initializers(beans {
-                bean {
-                    router {
-                        val service = ref<HaiService>()
-                        GET("/main") {
-                            ok().body(service.generic(), Hai::class.java)
-                        }
-                    }
-                }
-            })
-            .run(*args)
-}
-

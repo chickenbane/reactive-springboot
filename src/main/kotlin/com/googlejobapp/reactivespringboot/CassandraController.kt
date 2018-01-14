@@ -10,30 +10,29 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.reactive.function.server.ServerResponse
 import org.springframework.web.reactive.function.server.ServerResponse.notFound
 import org.springframework.web.reactive.function.server.ServerResponse.ok
+import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 
 @RestController
+@RequestMapping("c")
 class CassandraController(private val repo: UserRepo) {
     private val log = LoggerFactory.getLogger(CassandraController::class.java)
 
-    @GetMapping("/cass")
-    fun huh() {
-        log.info("cassandra entry point")
-    }
+    @GetMapping("all")
+    fun all(): Flux<User> = repo.findAll()
 
-    @PostMapping("cass")
+    @PostMapping
     fun post(@RequestBody body: User): Mono<Void> {
-        log.info("got body=$body")
-        val mono = repo.save(body).then()
-        log.info("done numero dos?")
-        return mono
+        log.info("post: got body=$body")
+        return repo.save(body).then()
     }
 
-    @GetMapping("cass2/{username}")
+    @GetMapping("{username}")
     fun getUsername2(@PathVariable username: String): Mono<User> = repo.findById(username)
 
     // TODO this endpoint doesn't really work =/
