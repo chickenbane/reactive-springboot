@@ -33,7 +33,7 @@ Steps to recreate
 Attach to Cassandra
 1. Create keyspace and table in Cassandra cluster
     * Use cqlsh locally `kubectl port-forward cassandra-0 9042`
-    * `create keyspace rsb with replication = {'class':'SimpleStrategy', 'replication_factor':2};`
+    * `create keyspace rsb with replication = {'class':'SimpleStrategy', 'replication_factor':1};`
     * `use rsb;`
     * `create table users ( username text primary key, first text, last text, email text);`
     * Do operations
