@@ -1,5 +1,7 @@
 buildscript {
     ext {
+        // TODO kotlin 1.2.20 breaks Spring-data-commons
+        // https://jira.spring.io/browse/DATACMNS-1245
         kotlinVersion = '1.2.10'
         springBootVersion = '2.0.0.M7'
         springfoxVersion = '2.7.0'
